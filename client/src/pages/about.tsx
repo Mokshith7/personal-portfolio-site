@@ -22,10 +22,7 @@ export default function About() {
   };
 
   const handleDownloadResume = () => {
-    toast({
-      title: "Resume Download",
-      description: "Please add your resume file to enable downloads.",
-    });
+    window.open('/resume.pdf', '_blank');
   };
 
   return (

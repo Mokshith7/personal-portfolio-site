@@ -10,10 +10,13 @@ export default function About() {
       <h1 className="font-serif text-3xl font-bold mb-8 text-center" data-testid="text-about-heading">About Me</h1>
 
       <div className="flex flex-col md:flex-row items-center md:items-start gap-8 mb-12">
-        <Avatar className="h-48 w-48 border-4 border-primary/20">
-          <AvatarImage src="/images/profile.jpg" alt="Profile" />
-          <AvatarFallback className="text-4xl font-serif">You</AvatarFallback>
-        </Avatar>
+        <div className="relative">
+          <div className="absolute -inset-1 bg-gradient-to-br from-primary/60 via-primary/30 to-primary/60 rounded-full blur-sm" />
+          <Avatar className="relative h-56 w-56 border-4 border-primary/40 shadow-xl ring-2 ring-primary/20 ring-offset-2 ring-offset-background">
+            <AvatarImage src="/images/profile.jpg" alt="Profile" className="object-cover" />
+            <AvatarFallback className="text-5xl font-serif bg-gradient-to-br from-primary/10 to-primary/5">You</AvatarFallback>
+          </Avatar>
+        </div>
 
         <div className="flex-1 text-center md:text-left">
           <h2 className="font-serif text-2xl font-semibold mb-4" data-testid="text-name">Your Name</h2>

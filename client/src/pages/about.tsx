@@ -15,10 +15,7 @@ export default function About() {
   };
 
   const handleScheduleMeeting = () => {
-    toast({
-      title: "Coming Soon",
-      description: "Meeting scheduling will be available soon!",
-    });
+    window.location.href = '/booking';
   };
 
   const handleDownloadResume = () => {

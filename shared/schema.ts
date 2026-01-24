@@ -27,9 +27,27 @@ export interface BookReview {
   publishedAt?: string;
 }
 
+// Validation schemas for API contract
+export const insertBlogSchema = z.object({
+  title: z.string().min(1),
+  excerpt: z.string().min(1),
+  content: z.string().min(1),
+  category: BlogCategory,
+  coverImage: z.string().optional(),
+});
+
+export const insertBookReviewSchema = z.object({
+  title: z.string().min(1),
+  author: z.string().min(1),
+  excerpt: z.string().min(1),
+  content: z.string().min(1),
+  rating: z.string().optional(),
+  coverImage: z.string().optional(),
+});
+
 // Request types - mainly for validation if needed
-export type CreateBlogRequest = Omit<Blog, 'slug' | 'publishedAt'>;
-export type CreateBookReviewRequest = Omit<BookReview, 'slug' | 'publishedAt'>;
+export type CreateBlogRequest = z.infer<typeof insertBlogSchema>;
+export type CreateBookReviewRequest = z.infer<typeof insertBookReviewSchema>;
 
 // Query params
 export interface BlogsQueryParams {

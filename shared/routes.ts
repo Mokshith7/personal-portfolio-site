@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { insertBlogSchema, insertBookReviewSchema, blogs, bookReviews, BlogCategory } from "./schema";
+import { insertBlogSchema, insertBookReviewSchema, BlogCategory } from "./schema";
 
 // Error schemas
 export const errorSchemas = {
@@ -26,14 +26,14 @@ export const api = {
         category: BlogCategory.optional(),
       }).optional(),
       responses: {
-        200: z.array(z.custom<typeof blogs.$inferSelect>()),
+        200: z.array(z.any()), // Using any to avoid complex circular refs with shared types
       },
     },
     get: {
       method: "GET" as const,
       path: "/api/blogs/:slug",
       responses: {
-        200: z.custom<typeof blogs.$inferSelect>(),
+        200: z.any(),
         404: errorSchemas.notFound,
       },
     },
@@ -42,7 +42,7 @@ export const api = {
       path: "/api/blogs",
       input: insertBlogSchema,
       responses: {
-        201: z.custom<typeof blogs.$inferSelect>(),
+        201: z.any(),
         400: errorSchemas.validation,
       },
     },
@@ -55,14 +55,14 @@ export const api = {
         search: z.string().optional(),
       }).optional(),
       responses: {
-        200: z.array(z.custom<typeof bookReviews.$inferSelect>()),
+        200: z.array(z.any()),
       },
     },
     get: {
       method: "GET" as const,
       path: "/api/book-reviews/:slug",
       responses: {
-        200: z.custom<typeof bookReviews.$inferSelect>(),
+        200: z.any(),
         404: errorSchemas.notFound,
       },
     },
@@ -71,7 +71,7 @@ export const api = {
       path: "/api/book-reviews",
       input: insertBookReviewSchema,
       responses: {
-        201: z.custom<typeof bookReviews.$inferSelect>(),
+        201: z.any(),
         400: errorSchemas.validation,
       },
     },
@@ -93,12 +93,6 @@ export function buildUrl(path: string, params?: Record<string, string | number>)
 
 // Type exports
 export type BlogInput = z.infer<typeof api.blogs.create.input>;
-export type BlogResponse = z.infer<typeof api.blogs.create.responses[201]>;
-export type BlogsListResponse = z.infer<typeof api.blogs.list.responses[200]>;
-
 export type BookReviewInput = z.infer<typeof api.bookReviews.create.input>;
-export type BookReviewResponse = z.infer<typeof api.bookReviews.create.responses[201]>;
-export type BookReviewsListResponse = z.infer<typeof api.bookReviews.list.responses[200]>;
-
 export type ValidationError = z.infer<typeof errorSchemas.validation>;
 export type NotFoundError = z.infer<typeof errorSchemas.notFound>;

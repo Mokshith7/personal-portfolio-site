@@ -11,8 +11,6 @@ import BookReviews from "@/pages/book-reviews";
 import BookReviewDetail from "@/pages/book-review-detail";
 import Projects from "@/pages/projects";
 import About from "@/pages/about";
-import Booking from "@/pages/booking";
-import BookingSuccess from "@/pages/booking-success";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -25,8 +23,6 @@ function Router() {
       <Route path="/book-reviews/:slug" component={BookReviewDetail} />
       <Route path="/projects" component={Projects} />
       <Route path="/about" component={About} />
-      <Route path="/booking" component={Booking} />
-      <Route path="/booking/success" component={BookingSuccess} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -1,14 +1,14 @@
 # Kintsugi Portfolio Website
 
 ## Overview
-A personal portfolio website with a Kintsugi theme - celebrating the beauty of imperfection. Built with React, Express, and PostgreSQL.
+A personal portfolio website with a Kintsugi theme - celebrating the beauty of imperfection. Built with React, Express, and markdown file-based content.
 
 ## Pages
 - **Home**: Landing page with Kintsugi bowl image and philosophy explanation
 - **Blogs**: Blog listing with search and category filters (Tech, Travel, Philosophy)
 - **Book Reviews**: Book reviews section with search functionality
 - **Projects**: Coming soon placeholder
-- **About Me**: Profile section with bio, resume download, and action buttons
+- **About Me**: Profile section with bio and social media links (Instagram, YouTube, LinkedIn)
 
 ## Project Structure
 ```
@@ -25,14 +25,16 @@ client/
       book-reviews.tsx   - Book reviews listing
       book-review-detail.tsx - Individual review view
       projects.tsx       - Projects page (coming soon)
-      about.tsx          - About me page
+      about.tsx          - About me page with social links
 server/
   routes.ts             - API endpoints
-  storage.ts            - Database operations
-  db.ts                 - Database connection
+  storage.ts            - File-based content operations
 shared/
-  schema.ts             - Database schema and types
+  schema.ts             - Type definitions
   routes.ts             - API contract definitions
+content/
+  blogs/                - Markdown blog files
+  book-reviews/         - Markdown book review files
 ```
 
 ## API Endpoints
@@ -46,15 +48,21 @@ shared/
 - Primary color: Gold (#D4A017)
 - Dark mode supported
 
+## Content Management
+- Blogs and book reviews are stored as markdown files in the `content/` directory
+- Uses gray-matter for parsing frontmatter metadata
+- No database required for content
+
+## Social Links (About Page)
+- Instagram: Update URL in about.tsx
+- YouTube: Update URL in about.tsx
+- LinkedIn: Update URL in about.tsx
+
 ## Future Features (TODO)
-- **Stripe Integration**: User dismissed the integration. When ready to enable:
-  - Buy Me a Coffee button needs payment processing
-  - Schedule Meeting button needs payment + calendar integration
-- **Resume Download**: Add resume PDF to client/public/
 - **Profile Image**: Add profile image at client/public/images/profile.jpg
-- **MD File Support**: Currently blogs are stored in database. Can add file-system MD parsing later
+- **Train With Me**: Fitness coaching section (coming soon placeholder)
 
 ## User Preferences
-- Uses React + TypeScript (not Django)
+- Uses React + TypeScript
 - Prefers simple, clean design
-- Wants MD file support for blogs (to be implemented)
+- Markdown file-based content (no database for blogs/reviews)

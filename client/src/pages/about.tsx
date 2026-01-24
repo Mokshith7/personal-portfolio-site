@@ -1,32 +1,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Download, Coffee, Calendar, Dumbbell, Construction } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { Dumbbell, Construction } from "lucide-react";
+import { SiInstagram, SiYoutube, SiLinkedin } from "react-icons/si";
 
 export default function About() {
-  const { toast } = useToast();
-
-  const handleBuyCoffee = () => {
-    toast({
-      title: "Coming Soon",
-      description: "Payment integration is being set up. Check back soon!",
-    });
-  };
-
-  const handleScheduleMeeting = () => {
-    window.location.href = '/booking';
-  };
-
-  const handleDownloadResume = () => {
-    window.open('/resume.pdf', '_blank');
-  };
-
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-12">
       <h1 className="font-serif text-3xl font-bold mb-8 text-center" data-testid="text-about-heading">About Me</h1>
 
-      {/* Profile Section */}
       <div className="flex flex-col md:flex-row items-center md:items-start gap-8 mb-12">
         <Avatar className="h-48 w-48 border-4 border-primary/20">
           <AvatarImage src="/images/profile.jpg" alt="Profile" />
@@ -42,25 +24,41 @@ export default function About() {
             When I'm not writing or coding, you'll find me exploring new places, hitting the gym, or lost in a good book.
           </p>
 
-          {/* Action Buttons */}
           <div className="flex flex-wrap justify-center md:justify-start gap-3">
-            <Button onClick={handleDownloadResume} data-testid="button-download-resume">
-              <Download className="h-4 w-4 mr-2" />
-              Download Resume
+            <Button
+              variant="outline"
+              asChild
+              data-testid="button-instagram"
+            >
+              <a href="https://instagram.com/yourusername" target="_blank" rel="noopener noreferrer">
+                <SiInstagram className="h-4 w-4 mr-2" />
+                Instagram
+              </a>
             </Button>
-            <Button variant="outline" onClick={handleBuyCoffee} data-testid="button-buy-coffee">
-              <Coffee className="h-4 w-4 mr-2" />
-              Buy Me a Coffee
+            <Button
+              variant="outline"
+              asChild
+              data-testid="button-youtube"
+            >
+              <a href="https://youtube.com/@yourusername" target="_blank" rel="noopener noreferrer">
+                <SiYoutube className="h-4 w-4 mr-2" />
+                YouTube
+              </a>
             </Button>
-            <Button variant="outline" onClick={handleScheduleMeeting} data-testid="button-schedule-meeting">
-              <Calendar className="h-4 w-4 mr-2" />
-              Schedule a Meeting
+            <Button
+              variant="outline"
+              asChild
+              data-testid="button-linkedin"
+            >
+              <a href="https://linkedin.com/in/yourusername" target="_blank" rel="noopener noreferrer">
+                <SiLinkedin className="h-4 w-4 mr-2" />
+                LinkedIn
+              </a>
             </Button>
           </div>
         </div>
       </div>
 
-      {/* Train With Me Section */}
       <Card className="max-w-lg mx-auto">
         <CardHeader>
           <CardTitle className="font-serif flex items-center gap-2">

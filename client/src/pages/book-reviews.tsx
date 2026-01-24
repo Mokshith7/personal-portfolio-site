@@ -57,7 +57,7 @@ export default function BookReviews() {
       ) : reviews && reviews.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {reviews.map((review) => (
-            <Link key={review.id} href={`/book-reviews/${review.slug}`} data-testid={`link-review-${review.slug}`}>
+            <Link key={review.slug} href={`/book-reviews/${review.slug}`} data-testid={`link-review-${review.slug}`}>
               <Card className="h-full hover-elevate cursor-pointer transition-all">
                 <CardHeader>
                   <CardTitle className="font-serif text-lg line-clamp-2">{review.title}</CardTitle>

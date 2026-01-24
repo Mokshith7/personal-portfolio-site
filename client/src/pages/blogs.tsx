@@ -81,7 +81,7 @@ export default function Blogs() {
       ) : blogs && blogs.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {blogs.map((blog) => (
-            <Link key={blog.id} href={`/blogs/${blog.slug}`} data-testid={`link-blog-${blog.slug}`}>
+            <Link key={blog.slug} href={`/blogs/${blog.slug}`} data-testid={`link-blog-${blog.slug}`}>
               <Card className="h-full hover-elevate cursor-pointer transition-all">
                 <CardHeader>
                   <div className="flex items-start justify-between gap-2">

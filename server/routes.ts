@@ -22,7 +22,8 @@ export async function registerRoutes(
 
   app.get(api.blogs.get.path, async (req, res) => {
     try {
-      const blog = await storage.getBlogBySlug(req.params.slug);
+      const slug = String(req.params.slug);
+      const blog = await storage.getBlogBySlug(slug);
       if (!blog) {
         return res.status(404).json({ message: "Blog not found" });
       }
@@ -35,7 +36,7 @@ export async function registerRoutes(
   // Book review routes
   app.get(api.bookReviews.list.path, async (req, res) => {
     try {
-      const search = req.query.search as string | undefined;
+      const search = (req.query.search as string) || undefined;
       const reviews = await storage.getBookReviews(search);
       res.json(reviews);
     } catch (err) {
@@ -45,7 +46,8 @@ export async function registerRoutes(
 
   app.get(api.bookReviews.get.path, async (req, res) => {
     try {
-      const review = await storage.getBookReviewBySlug(req.params.slug);
+      const slug = String(req.params.slug);
+      const review = await storage.getBookReviewBySlug(slug);
       if (!review) {
         return res.status(404).json({ message: "Book review not found" });
       }

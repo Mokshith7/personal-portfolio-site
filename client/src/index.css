@@ -329,27 +329,27 @@
 
   /* Prose styling for markdown content */
   .prose {
-    @apply max-w-none;
+    @apply max-w-none text-foreground;
   }
   
   .prose h1 {
-    @apply text-3xl font-serif font-bold mb-4 mt-8;
+    @apply text-3xl font-serif font-bold mb-4 mt-8 text-foreground;
   }
   
   .prose h2 {
-    @apply text-2xl font-serif font-semibold mb-3 mt-6;
+    @apply text-2xl font-serif font-semibold mb-3 mt-6 text-foreground;
   }
   
   .prose h3 {
-    @apply text-xl font-serif font-medium mb-2 mt-4;
+    @apply text-xl font-serif font-medium mb-2 mt-4 text-foreground;
   }
   
   .prose p {
-    @apply mb-4 leading-relaxed;
+    @apply mb-4 leading-relaxed text-foreground/90;
   }
   
   .prose ul, .prose ol {
-    @apply mb-4 pl-6;
+    @apply mb-4 pl-6 text-foreground/90;
   }
   
   .prose li {
@@ -357,22 +357,22 @@
   }
   
   .prose strong {
-    @apply font-semibold;
+    @apply font-semibold text-foreground;
   }
   
   .prose code {
-    @apply bg-muted px-1.5 py-0.5 rounded text-sm font-mono;
+    @apply bg-muted px-1.5 py-0.5 rounded text-sm font-mono text-foreground;
   }
   
   .prose pre {
-    @apply bg-muted p-4 rounded-md overflow-x-auto mb-4;
+    @apply bg-muted p-4 rounded-md overflow-x-auto mb-4 border;
   }
   
   .prose pre code {
-    @apply bg-transparent p-0;
+    @apply bg-transparent p-0 text-foreground;
   }
   
   .prose blockquote {
-    @apply border-l-4 border-primary pl-4 italic my-4;
+    @apply border-l-4 border-primary pl-4 italic my-4 text-foreground/80;
   }
 }

@@ -34,7 +34,7 @@ function WeekGrid({ weeksLived }: { weeksLived: number }) {
             {Array.from({ length: WEEKS_PER_YEAR }, (_, i) => (
               <div 
                 key={i} 
-                className="w-2 text-center text-[6px] text-muted-foreground"
+                className="w-3 text-center text-[7px] text-muted-foreground"
                 title={`Week ${i + 1}`}
               >
                 {(i + 1) % 10 === 0 ? (i + 1) : ""}
@@ -60,7 +60,7 @@ function WeekGrid({ weeksLived }: { weeksLived: number }) {
                   return (
                     <div
                       key={weekIndex}
-                      className={`w-2 h-2 rounded-sm transition-colors ${
+                      className={`w-3 h-3 rounded-sm transition-colors ${
                         isCurrentWeek
                           ? "bg-primary ring-1 ring-primary ring-offset-1"
                           : isLived

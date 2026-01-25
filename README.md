@@ -8,6 +8,7 @@ A personal portfolio website with a Kintsugi theme - celebrating the beauty of i
 - **Blogs**: Blog posts with search and category filtering
 - **Book Reviews**: Book reviews with ratings and categories
 - **Learning Journey**: Document skills you're learning with daily journal entries
+- **Memento Mori**: Interactive life-in-weeks visualization board
 - **Projects**: Showcase your work (coming soon)
 - **About Me**: Profile with social media links
 
@@ -136,6 +137,22 @@ All content is stored as markdown files in the `content/` directory. No database
    ```markdown
    ![Description](/images/your-image.jpg)
    ```
+
+## Memento Mori Board
+
+The Memento Mori page is an interactive visualization of life in weeks, inspired by the Stoic practice of remembering mortality.
+
+**Features:**
+- Visual grid showing all weeks of a 70-year life (3,640 weeks)
+- Enter any age to generate a personalized board
+- Shaded boxes represent weeks already lived
+- Download the board as an image to keep as a reminder
+
+**How it works:**
+1. Navigate to the Memento Mori page
+2. Enter your current age
+3. Click "Generate" to see your life visualized in weeks
+4. Click "Download as Image" to save your personal board
 
 ## Customization
 

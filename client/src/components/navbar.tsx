@@ -9,6 +9,7 @@ const navLinks = [
   { href: "/blogs", label: "Blogs" },
   { href: "/book-reviews", label: "Book Reviews" },
   { href: "/learning", label: "Learning Journey" },
+  { href: "/memento-mori", label: "Memento Mori" },
   { href: "/projects", label: "Projects" },
   { href: "/about", label: "About Me" },
 ];

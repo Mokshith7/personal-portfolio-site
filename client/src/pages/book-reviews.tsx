@@ -5,17 +5,30 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Search, Star } from "lucide-react";
 import type { BookReview } from "@shared/schema";
 
 export default function BookReviews() {
   const [search, setSearch] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+
+  const { data: categories } = useQuery<string[]>({
+    queryKey: ["/api/book-reviews/categories"],
+  });
 
   const { data: reviews, isLoading } = useQuery<BookReview[]>({
-    queryKey: ["/api/book-reviews", search],
+    queryKey: ["/api/book-reviews", search, selectedCategory],
     queryFn: async () => {
       const params = new URLSearchParams();
       if (search) params.set("search", search);
+      if (selectedCategory && selectedCategory !== "all") params.set("category", selectedCategory);
       const res = await fetch(`/api/book-reviews?${params}`);
       return res.json();
     },
@@ -25,20 +38,33 @@ export default function BookReviews() {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
       <h1 className="font-serif text-3xl font-bold mb-8" data-testid="text-reviews-heading">Book Reviews</h1>
 
-      {/* Search */}
-      <div className="relative max-w-md mb-8">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          type="search"
-          placeholder="Search book reviews..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="pl-10"
-          data-testid="input-search-reviews"
-        />
+      <div className="flex flex-col sm:flex-row gap-4 mb-8">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="search"
+            placeholder="Search book reviews..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-10"
+            data-testid="input-search-reviews"
+          />
+        </div>
+        <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+          <SelectTrigger className="w-full sm:w-[180px]" data-testid="select-category">
+            <SelectValue placeholder="All Categories" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all" data-testid="select-item-all">All Categories</SelectItem>
+            {categories?.map((cat) => (
+              <SelectItem key={cat} value={cat} data-testid={`select-item-${cat}`}>
+                {cat.charAt(0).toUpperCase() + cat.slice(1)}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
-      {/* Reviews Grid */}
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3].map((i) => (
@@ -62,14 +88,21 @@ export default function BookReviews() {
                 <CardHeader>
                   <CardTitle className="font-serif text-lg line-clamp-2">{review.title}</CardTitle>
                   <p className="text-sm text-muted-foreground">by {review.author}</p>
-                  {review.rating && (
-                    <div className="flex items-center gap-1">
-                      <Star className="h-4 w-4 fill-primary text-primary" />
-                      <Badge variant="outline" className="text-xs">
-                        {review.rating}
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {review.rating && (
+                      <div className="flex items-center gap-1">
+                        <Star className="h-4 w-4 fill-primary text-primary" />
+                        <Badge variant="outline" className="text-xs">
+                          {review.rating}
+                        </Badge>
+                      </div>
+                    )}
+                    {review.category && (
+                      <Badge variant="secondary" className="text-xs capitalize">
+                        {review.category}
                       </Badge>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground text-sm line-clamp-3">{review.excerpt}</p>

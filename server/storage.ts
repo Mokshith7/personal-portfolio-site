@@ -7,10 +7,12 @@ export interface IStorage {
   // Blogs
   getBlogs(search?: string, category?: string): Promise<Blog[]>;
   getBlogBySlug(slug: string): Promise<Blog | undefined>;
+  getBlogCategories(): Promise<string[]>;
   
   // Book Reviews
-  getBookReviews(search?: string): Promise<BookReview[]>;
+  getBookReviews(search?: string, category?: string): Promise<BookReview[]>;
   getBookReviewBySlug(slug: string): Promise<BookReview | undefined>;
+  getBookReviewCategories(): Promise<string[]>;
   
   // Learning Journey
   getSkills(): Promise<Skill[]>;
@@ -88,8 +90,25 @@ export class FileStorage implements IStorage {
     }
   }
 
+  async getBlogCategories(): Promise<string[]> {
+    await this.ensureDirs();
+    const files = await fs.readdir(this.blogsDir);
+    const categories = new Set<string>();
+
+    for (const file of files) {
+      if (!file.endsWith(".md")) continue;
+      const content = await fs.readFile(path.join(this.blogsDir, file), "utf-8");
+      const { data } = matter(content);
+      if (data.category) {
+        categories.add(data.category);
+      }
+    }
+
+    return Array.from(categories).sort();
+  }
+
   // Book Reviews
-  async getBookReviews(search?: string): Promise<BookReview[]> {
+  async getBookReviews(search?: string, category?: string): Promise<BookReview[]> {
     await this.ensureDirs();
     const files = await fs.readdir(this.reviewsDir);
     const reviews: BookReview[] = [];
@@ -106,9 +125,13 @@ export class FileStorage implements IStorage {
         excerpt: data.excerpt || "",
         content: body,
         rating: data.rating,
+        category: data.category,
         coverImage: data.coverImage,
         publishedAt: data.date || new Date().toISOString(),
       };
+
+      // Filter by category
+      if (category && review.category !== category) continue;
 
       if (search) {
         const searchLower = search.toLowerCase();
@@ -140,12 +163,30 @@ export class FileStorage implements IStorage {
         excerpt: data.excerpt || "",
         content: body,
         rating: data.rating,
+        category: data.category,
         coverImage: data.coverImage,
         publishedAt: data.date || new Date().toISOString(),
       };
     } catch (err) {
       return undefined;
     }
+  }
+
+  async getBookReviewCategories(): Promise<string[]> {
+    await this.ensureDirs();
+    const files = await fs.readdir(this.reviewsDir);
+    const categories = new Set<string>();
+
+    for (const file of files) {
+      if (!file.endsWith(".md")) continue;
+      const content = await fs.readFile(path.join(this.reviewsDir, file), "utf-8");
+      const { data } = matter(content);
+      if (data.category) {
+        categories.add(data.category);
+      }
+    }
+
+    return Array.from(categories).sort();
   }
 
   // Learning Journey - Skills

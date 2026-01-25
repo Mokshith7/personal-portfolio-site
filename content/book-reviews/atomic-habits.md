@@ -3,6 +3,7 @@ title: "Atomic Habits"
 author: "James Clear"
 excerpt: "A practical guide to building good habits and breaking bad ones through small, incremental changes."
 rating: "5/5"
+category: "self-help"
 date: "2026-01-24"
 ---
 

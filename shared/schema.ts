@@ -23,6 +23,7 @@ export interface BookReview {
   excerpt: string;
   content: string;
   rating?: string;
+  category?: string;
   coverImage?: string;
   publishedAt?: string;
 }
@@ -57,6 +58,7 @@ export interface BlogsQueryParams {
 
 export interface BookReviewsQueryParams {
   search?: string;
+  category?: string;
 }
 
 // Learning Journey - Skills and Journal Entries

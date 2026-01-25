@@ -2,30 +2,33 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Search } from "lucide-react";
 import type { Blog } from "@shared/schema";
 
-const categories = [
-  { value: "", label: "All" },
-  { value: "tech", label: "Tech" },
-  { value: "travel", label: "Travel" },
-  { value: "philosophy", label: "Philosophy" },
-];
-
 export default function Blogs() {
   const [search, setSearch] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+
+  const { data: categories } = useQuery<string[]>({
+    queryKey: ["/api/blogs/categories"],
+  });
 
   const { data: blogs, isLoading } = useQuery<Blog[]>({
     queryKey: ["/api/blogs", search, selectedCategory],
     queryFn: async () => {
       const params = new URLSearchParams();
       if (search) params.set("search", search);
-      if (selectedCategory) params.set("category", selectedCategory);
+      if (selectedCategory && selectedCategory !== "all") params.set("category", selectedCategory);
       const res = await fetch(`/api/blogs?${params}`);
       return res.json();
     },
@@ -35,7 +38,6 @@ export default function Blogs() {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
       <h1 className="font-serif text-3xl font-bold mb-8" data-testid="text-blogs-heading">Blogs</h1>
 
-      {/* Search and Filter */}
       <div className="flex flex-col sm:flex-row gap-4 mb-8">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -48,22 +50,21 @@ export default function Blogs() {
             data-testid="input-search-blogs"
           />
         </div>
-        <div className="flex gap-2 flex-wrap">
-          {categories.map((cat) => (
-            <Button
-              key={cat.value}
-              variant={selectedCategory === cat.value ? "default" : "outline"}
-              size="sm"
-              onClick={() => setSelectedCategory(cat.value)}
-              data-testid={`button-filter-${cat.label.toLowerCase()}`}
-            >
-              {cat.label}
-            </Button>
-          ))}
-        </div>
+        <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+          <SelectTrigger className="w-full sm:w-[180px]" data-testid="select-category">
+            <SelectValue placeholder="All Categories" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all" data-testid="select-item-all">All Categories</SelectItem>
+            {categories?.map((cat) => (
+              <SelectItem key={cat} value={cat} data-testid={`select-item-${cat}`}>
+                {cat.charAt(0).toUpperCase() + cat.slice(1)}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
-      {/* Blog Grid */}
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3].map((i) => (

@@ -18,6 +18,15 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/blogs/categories", async (req, res) => {
+    try {
+      const categories = await storage.getBlogCategories();
+      res.json(categories);
+    } catch (err) {
+      res.status(500).json({ message: "Failed to fetch blog categories" });
+    }
+  });
+
   app.get(api.blogs.get.path, async (req, res) => {
     try {
       const slug = String(req.params.slug);
@@ -34,10 +43,20 @@ export async function registerRoutes(
   app.get(api.bookReviews.list.path, async (req, res) => {
     try {
       const search = (req.query.search as string) || undefined;
-      const reviews = await storage.getBookReviews(search);
+      const category = (req.query.category as string) || undefined;
+      const reviews = await storage.getBookReviews(search, category);
       res.json(reviews);
     } catch (err) {
       res.status(500).json({ message: "Failed to fetch book reviews" });
+    }
+  });
+
+  app.get("/api/book-reviews/categories", async (req, res) => {
+    try {
+      const categories = await storage.getBookReviewCategories();
+      res.json(categories);
+    } catch (err) {
+      res.status(500).json({ message: "Failed to fetch book review categories" });
     }
   });
 

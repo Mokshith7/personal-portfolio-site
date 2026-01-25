@@ -24,6 +24,9 @@ client/
       blog-detail.tsx    - Individual blog view
       book-reviews.tsx   - Book reviews listing
       book-review-detail.tsx - Individual review view
+      learning.tsx       - Learning Journey skills list
+      learning-detail.tsx - Skill detail with journal entries
+      learning-entry.tsx - Individual journal entry view
       projects.tsx       - Projects page (coming soon)
       about.tsx          - About me page with social links
 server/
@@ -35,6 +38,10 @@ shared/
 content/
   blogs/                - Markdown blog files
   book-reviews/         - Markdown book review files
+  learning/             - Learning journey content
+    <skill-slug>/       - Folder per skill
+      _skill.md         - Skill metadata (title, excerpt, status)
+      day-1-xxx.md      - Journal entries
 ```
 
 ## API Endpoints
@@ -42,6 +49,10 @@ content/
 - `GET /api/blogs/:slug` - Get single blog
 - `GET /api/book-reviews` - List book reviews (supports search)
 - `GET /api/book-reviews/:slug` - Get single review
+- `GET /api/learning/skills` - List all learning skills
+- `GET /api/learning/skills/:slug` - Get single skill
+- `GET /api/learning/skills/:slug/entries` - List journal entries (supports search)
+- `GET /api/learning/skills/:slug/entries/:entrySlug` - Get single entry
 
 ## Theme
 - Kintsugi-inspired warm earthy tones with gold accents
@@ -52,6 +63,34 @@ content/
 - Blogs and book reviews are stored as markdown files in the `content/` directory
 - Uses gray-matter for parsing frontmatter metadata
 - No database required for content
+
+## Learning Journey
+The Learning Journey feature lets you document skills you're learning with daily journal entries.
+
+**Adding a new skill:**
+1. Create a folder in `content/learning/<skill-name>/`
+2. Add `_skill.md` with frontmatter:
+   ```
+   ---
+   title: Skill Name
+   excerpt: Brief description
+   status: in-progress  # or completed, paused
+   startedAt: 2025-12-01
+   ---
+   ```
+
+**Adding journal entries:**
+1. Add markdown files to the skill folder (e.g., `day-1-first-lesson.md`)
+2. Include frontmatter:
+   ```
+   ---
+   title: "Day 1: First Lesson"
+   date: 2025-12-01
+   excerpt: Summary of what you learned
+   ---
+   
+   Journal content here...
+   ```
 
 ## Social Links (About Page)
 - Instagram: Update URL in about.tsx

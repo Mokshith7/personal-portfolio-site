@@ -54,5 +54,53 @@ export async function registerRoutes(
     }
   });
 
+  // Learning Journey - Skills
+  app.get("/api/learning/skills", async (req, res) => {
+    try {
+      const skills = await storage.getSkills();
+      res.json(skills);
+    } catch (err) {
+      res.status(500).json({ message: "Failed to fetch skills" });
+    }
+  });
+
+  app.get("/api/learning/skills/:slug", async (req, res) => {
+    try {
+      const slug = String(req.params.slug);
+      const skill = await storage.getSkillBySlug(slug);
+      if (!skill) {
+        return res.status(404).json({ message: "Skill not found" });
+      }
+      res.json(skill);
+    } catch (err) {
+      res.status(500).json({ message: "Failed to fetch skill" });
+    }
+  });
+
+  app.get("/api/learning/skills/:slug/entries", async (req, res) => {
+    try {
+      const slug = String(req.params.slug);
+      const search = req.query.search as string | undefined;
+      const entries = await storage.getLearningEntries(slug, search);
+      res.json(entries);
+    } catch (err) {
+      res.status(500).json({ message: "Failed to fetch learning entries" });
+    }
+  });
+
+  app.get("/api/learning/skills/:slug/entries/:entrySlug", async (req, res) => {
+    try {
+      const slug = String(req.params.slug);
+      const entrySlug = String(req.params.entrySlug);
+      const entry = await storage.getLearningEntryBySlug(slug, entrySlug);
+      if (!entry) {
+        return res.status(404).json({ message: "Learning entry not found" });
+      }
+      res.json(entry);
+    } catch (err) {
+      res.status(500).json({ message: "Failed to fetch learning entry" });
+    }
+  });
+
   return httpServer;
 }

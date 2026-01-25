@@ -1,7 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 import matter from "gray-matter";
-import { type Blog, type BookReview } from "@shared/schema";
+import { type Blog, type BookReview, type Skill, type LearningEntry } from "@shared/schema";
 
 export interface IStorage {
   // Blogs
@@ -11,11 +11,18 @@ export interface IStorage {
   // Book Reviews
   getBookReviews(search?: string): Promise<BookReview[]>;
   getBookReviewBySlug(slug: string): Promise<BookReview | undefined>;
+  
+  // Learning Journey
+  getSkills(): Promise<Skill[]>;
+  getSkillBySlug(slug: string): Promise<Skill | undefined>;
+  getLearningEntries(skillSlug: string, search?: string): Promise<LearningEntry[]>;
+  getLearningEntryBySlug(skillSlug: string, entrySlug: string): Promise<LearningEntry | undefined>;
 }
 
 export class FileStorage implements IStorage {
   private blogsDir = path.join(process.cwd(), "content", "blogs");
   private reviewsDir = path.join(process.cwd(), "content", "book-reviews");
+  private learningDir = path.join(process.cwd(), "content", "learning");
 
   private async ensureDirs() {
     await fs.mkdir(this.blogsDir, { recursive: true });
@@ -135,6 +142,116 @@ export class FileStorage implements IStorage {
         rating: data.rating,
         coverImage: data.coverImage,
         publishedAt: data.date || new Date().toISOString(),
+      };
+    } catch (err) {
+      return undefined;
+    }
+  }
+
+  // Learning Journey - Skills
+  async getSkills(): Promise<Skill[]> {
+    await fs.mkdir(this.learningDir, { recursive: true });
+    const entries = await fs.readdir(this.learningDir, { withFileTypes: true });
+    const skills: Skill[] = [];
+
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue;
+      
+      const skillPath = path.join(this.learningDir, entry.name, "_skill.md");
+      try {
+        const content = await fs.readFile(skillPath, "utf-8");
+        const { data } = matter(content);
+        
+        skills.push({
+          slug: entry.name,
+          title: data.title || entry.name,
+          excerpt: data.excerpt || "",
+          status: data.status || "in-progress",
+          startedAt: data.startedAt,
+          coverImage: data.coverImage,
+        });
+      } catch (err) {
+        continue;
+      }
+    }
+
+    return skills.sort((a, b) => 
+      new Date(b.startedAt || 0).getTime() - new Date(a.startedAt || 0).getTime()
+    );
+  }
+
+  async getSkillBySlug(slug: string): Promise<Skill | undefined> {
+    try {
+      const skillPath = path.join(this.learningDir, slug, "_skill.md");
+      const content = await fs.readFile(skillPath, "utf-8");
+      const { data } = matter(content);
+      
+      return {
+        slug,
+        title: data.title || slug,
+        excerpt: data.excerpt || "",
+        status: data.status || "in-progress",
+        startedAt: data.startedAt,
+        coverImage: data.coverImage,
+      };
+    } catch (err) {
+      return undefined;
+    }
+  }
+
+  async getLearningEntries(skillSlug: string, search?: string): Promise<LearningEntry[]> {
+    const skillDir = path.join(this.learningDir, skillSlug);
+    try {
+      const files = await fs.readdir(skillDir);
+      const entries: LearningEntry[] = [];
+
+      for (const file of files) {
+        if (!file.endsWith(".md") || file === "_skill.md") continue;
+        
+        const content = await fs.readFile(path.join(skillDir, file), "utf-8");
+        const { data, content: body } = matter(content);
+        
+        const entry: LearningEntry = {
+          slug: file.replace(".md", ""),
+          skillSlug,
+          title: data.title || "Untitled",
+          excerpt: data.excerpt || "",
+          content: body,
+          date: data.date || new Date().toISOString(),
+        };
+
+        if (search) {
+          const searchLower = search.toLowerCase();
+          if (!entry.title.toLowerCase().includes(searchLower) && 
+              !entry.excerpt.toLowerCase().includes(searchLower)) {
+            continue;
+          }
+        }
+        
+        entries.push(entry);
+      }
+
+      return entries.sort((a, b) => 
+        new Date(b.date).getTime() - new Date(a.date).getTime()
+      );
+    } catch (err) {
+      return [];
+    }
+  }
+
+  async getLearningEntryBySlug(skillSlug: string, entrySlug: string): Promise<LearningEntry | undefined> {
+    try {
+      const filePath = path.join(this.learningDir, skillSlug, `${entrySlug}.md`);
+      const content = await fs.readFile(filePath, "utf-8");
+      const { data, content: body } = matter(content);
+      
+      return {
+        slug: entrySlug,
+        skillSlug,
+        title: data.title || "Untitled",
+        excerpt: data.excerpt || "",
+        content: body,
+        date: data.date || new Date().toISOString(),
       };
     } catch (err) {
       return undefined;

@@ -58,3 +58,26 @@ export interface BlogsQueryParams {
 export interface BookReviewsQueryParams {
   search?: string;
 }
+
+// Learning Journey - Skills and Journal Entries
+export interface Skill {
+  slug: string;
+  title: string;
+  excerpt: string;
+  status: "in-progress" | "completed" | "paused";
+  startedAt?: string;
+  coverImage?: string;
+}
+
+export interface LearningEntry {
+  slug: string;
+  skillSlug: string;
+  title: string;
+  excerpt: string;
+  content: string;
+  date: string;
+}
+
+export interface LearningEntriesQueryParams {
+  search?: string;
+}

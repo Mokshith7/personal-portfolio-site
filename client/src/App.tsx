@@ -9,6 +9,9 @@ import Blogs from "@/pages/blogs";
 import BlogDetail from "@/pages/blog-detail";
 import BookReviews from "@/pages/book-reviews";
 import BookReviewDetail from "@/pages/book-review-detail";
+import Learning from "@/pages/learning";
+import LearningDetail from "@/pages/learning-detail";
+import LearningEntry from "@/pages/learning-entry";
 import Projects from "@/pages/projects";
 import About from "@/pages/about";
 import NotFound from "@/pages/not-found";
@@ -21,6 +24,9 @@ function Router() {
       <Route path="/blogs/:slug" component={BlogDetail} />
       <Route path="/book-reviews" component={BookReviews} />
       <Route path="/book-reviews/:slug" component={BookReviewDetail} />
+      <Route path="/learning" component={Learning} />
+      <Route path="/learning/:slug" component={LearningDetail} />
+      <Route path="/learning/:slug/:entrySlug" component={LearningEntry} />
       <Route path="/projects" component={Projects} />
       <Route path="/about" component={About} />
       <Route component={NotFound} />

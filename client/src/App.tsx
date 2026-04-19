@@ -7,6 +7,7 @@ import { Navbar } from "@/components/navbar";
 import Home from "@/pages/home";
 import Blogs from "@/pages/blogs";
 import BlogDetail from "@/pages/blog-detail";
+import BlogSeriesEntry from "@/pages/blog-series-entry";
 import BookReviews from "@/pages/book-reviews";
 import BookReviewDetail from "@/pages/book-review-detail";
 import Learning from "@/pages/learning";
@@ -22,6 +23,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/blogs" component={Blogs} />
+      <Route path="/blogs/:slug/:entrySlug" component={BlogSeriesEntry} />
       <Route path="/blogs/:slug" component={BlogDetail} />
       <Route path="/book-reviews" component={BookReviews} />
       <Route path="/book-reviews/:slug" component={BookReviewDetail} />

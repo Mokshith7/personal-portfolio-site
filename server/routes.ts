@@ -27,6 +27,20 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/blogs/:seriesSlug/:entrySlug", async (req, res) => {
+    try {
+      const seriesSlug = String(req.params.seriesSlug);
+      const entrySlug = String(req.params.entrySlug);
+      const entry = await storage.getBlogSeriesEntry(seriesSlug, entrySlug);
+      if (!entry) {
+        return res.status(404).json({ message: "Entry not found" });
+      }
+      res.json(entry);
+    } catch (err) {
+      res.status(500).json({ message: "Failed to fetch blog entry" });
+    }
+  });
+
   app.get(api.blogs.get.path, async (req, res) => {
     try {
       const slug = String(req.params.slug);

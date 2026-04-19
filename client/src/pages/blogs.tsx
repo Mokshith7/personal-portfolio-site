@@ -5,30 +5,17 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Search } from "lucide-react";
 import type { Blog } from "@shared/schema";
 
 export default function Blogs() {
   const [search, setSearch] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
-
-  const { data: categories } = useQuery<string[]>({
-    queryKey: ["/api/blogs/categories"],
-  });
 
   const { data: blogs, isLoading } = useQuery<Blog[]>({
-    queryKey: ["/api/blogs", search, selectedCategory],
+    queryKey: ["/api/blogs", search],
     queryFn: async () => {
       const params = new URLSearchParams();
       if (search) params.set("search", search);
-      if (selectedCategory && selectedCategory !== "all") params.set("category", selectedCategory);
       const res = await fetch(`/api/blogs?${params}`);
       return res.json();
     },
@@ -38,31 +25,16 @@ export default function Blogs() {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
       <h1 className="font-serif text-3xl font-bold mb-8" data-testid="text-blogs-heading">Blogs</h1>
 
-      <div className="flex flex-col sm:flex-row gap-4 mb-8">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            type="search"
-            placeholder="Search blogs..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-10"
-            data-testid="input-search-blogs"
-          />
-        </div>
-        <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-          <SelectTrigger className="w-full sm:w-[180px]" data-testid="select-category">
-            <SelectValue placeholder="All Categories" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all" data-testid="select-item-all">All Categories</SelectItem>
-            {categories?.map((cat) => (
-              <SelectItem key={cat} value={cat} data-testid={`select-item-${cat}`}>
-                {cat.charAt(0).toUpperCase() + cat.slice(1)}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      <div className="relative mb-8">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          type="search"
+          placeholder="Search blogs..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="pl-10"
+          data-testid="input-search-blogs"
+        />
       </div>
 
       {isLoading ? (
@@ -87,10 +59,10 @@ export default function Blogs() {
                 <CardHeader>
                   <div className="flex items-start justify-between gap-2">
                     <CardTitle className="font-serif text-lg line-clamp-2">{blog.title}</CardTitle>
+                    {blog.isSeries && (
+                      <Badge variant="outline" className="shrink-0 text-xs">Series</Badge>
+                    )}
                   </div>
-                  <Badge variant="secondary" className="w-fit capitalize">
-                    {blog.category}
-                  </Badge>
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground text-sm line-clamp-3">{blog.excerpt}</p>

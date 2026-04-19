@@ -34,48 +34,65 @@ export class FileStorage implements IStorage {
   // Blogs
   async getBlogs(search?: string, category?: string): Promise<Blog[]> {
     await this.ensureDirs();
-    const files = await fs.readdir(this.blogsDir);
+    const entries = await fs.readdir(this.blogsDir, { withFileTypes: true });
     const blogs: Blog[] = [];
 
-    for (const file of files) {
-      if (!file.endsWith(".md")) continue;
-      const content = await fs.readFile(path.join(this.blogsDir, file), "utf-8");
-      const { data, content: body } = matter(content);
-      
-      const blog: Blog = {
-        slug: file.replace(".md", ""),
-        title: data.title || "Untitled",
-        excerpt: data.excerpt || "",
-        content: body,
-        category: data.category || "philosophy",
-        coverImage: data.coverImage,
-        publishedAt: data.date || new Date().toISOString(),
-      };
-
-      // Filter
-      if (category && blog.category !== category) continue;
-      if (search) {
-        const searchLower = search.toLowerCase();
-        if (!blog.title.toLowerCase().includes(searchLower) && 
-            !blog.excerpt.toLowerCase().includes(searchLower)) {
+    for (const entry of entries) {
+      if (entry.isDirectory()) {
+        const indexPath = path.join(this.blogsDir, entry.name, "_index.md");
+        try {
+          const content = await fs.readFile(indexPath, "utf-8");
+          const { data } = matter(content);
+          const blog: Blog = {
+            slug: entry.name,
+            title: data.title || entry.name,
+            excerpt: data.excerpt || "",
+            content: "",
+            category: data.category || "series",
+            coverImage: data.coverImage,
+            publishedAt: data.date || new Date().toISOString(),
+            isSeries: true,
+          };
+          if (search) {
+            const s = search.toLowerCase();
+            if (!blog.title.toLowerCase().includes(s) && !blog.excerpt.toLowerCase().includes(s)) continue;
+          }
+          blogs.push(blog);
+        } catch {
           continue;
         }
+      } else if (entry.name.endsWith(".md")) {
+        const content = await fs.readFile(path.join(this.blogsDir, entry.name), "utf-8");
+        const { data, content: body } = matter(content);
+        const blog: Blog = {
+          slug: entry.name.replace(".md", ""),
+          title: data.title || "Untitled",
+          excerpt: data.excerpt || "",
+          content: body,
+          category: data.category || "philosophy",
+          coverImage: data.coverImage,
+          publishedAt: data.date || new Date().toISOString(),
+        };
+        if (category && blog.category !== category) continue;
+        if (search) {
+          const s = search.toLowerCase();
+          if (!blog.title.toLowerCase().includes(s) && !blog.excerpt.toLowerCase().includes(s)) continue;
+        }
+        blogs.push(blog);
       }
-      
-      blogs.push(blog);
     }
 
-    return blogs.sort((a, b) => 
+    return blogs.sort((a, b) =>
       new Date(b.publishedAt || 0).getTime() - new Date(a.publishedAt || 0).getTime()
     );
   }
 
   async getBlogBySlug(slug: string): Promise<Blog | undefined> {
+    // Try flat file first
     try {
       const filePath = path.join(this.blogsDir, `${slug}.md`);
       const content = await fs.readFile(filePath, "utf-8");
       const { data, content: body } = matter(content);
-      
       return {
         slug,
         title: data.title || "Untitled",
@@ -85,7 +102,66 @@ export class FileStorage implements IStorage {
         coverImage: data.coverImage,
         publishedAt: data.date || new Date().toISOString(),
       };
-    } catch (err) {
+    } catch {
+      // Fall through to series check
+    }
+
+    // Try as a series directory
+    try {
+      const indexPath = path.join(this.blogsDir, slug, "_index.md");
+      const indexContent = await fs.readFile(indexPath, "utf-8");
+      const { data } = matter(indexContent);
+
+      const files = await fs.readdir(path.join(this.blogsDir, slug));
+      const entries: Blog[] = [];
+      for (const file of files) {
+        if (!file.endsWith(".md") || file === "_index.md") continue;
+        const ec = await fs.readFile(path.join(this.blogsDir, slug, file), "utf-8");
+        const { data: ed, content: body } = matter(ec);
+        entries.push({
+          slug: file.replace(".md", ""),
+          title: ed.title || "Untitled",
+          excerpt: ed.excerpt || "",
+          content: body,
+          category: ed.category || "series",
+          publishedAt: ed.date || new Date().toISOString(),
+        });
+      }
+      entries.sort((a, b) =>
+        new Date(a.publishedAt || 0).getTime() - new Date(b.publishedAt || 0).getTime()
+      );
+
+      return {
+        slug,
+        title: data.title || slug,
+        excerpt: data.excerpt || "",
+        content: "",
+        category: data.category || "series",
+        coverImage: data.coverImage,
+        publishedAt: data.date || new Date().toISOString(),
+        isSeries: true,
+        entries,
+      };
+    } catch {
+      return undefined;
+    }
+  }
+
+  async getBlogSeriesEntry(seriesSlug: string, entrySlug: string): Promise<Blog | undefined> {
+    try {
+      const filePath = path.join(this.blogsDir, seriesSlug, `${entrySlug}.md`);
+      const content = await fs.readFile(filePath, "utf-8");
+      const { data, content: body } = matter(content);
+      return {
+        slug: entrySlug,
+        title: data.title || "Untitled",
+        excerpt: data.excerpt || "",
+        content: body,
+        category: data.category || "series",
+        coverImage: data.coverImage,
+        publishedAt: data.date || new Date().toISOString(),
+      };
+    } catch {
       return undefined;
     }
   }

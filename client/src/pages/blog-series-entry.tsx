@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams, Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
 import type { Blog } from "@shared/schema";
 
@@ -20,14 +19,14 @@ function renderContent(content: string) {
   });
 }
 
-export default function BlogDetail() {
-  const params = useParams<{ slug: string }>();
+export default function BlogSeriesEntry() {
+  const params = useParams<{ slug: string; entrySlug: string }>();
 
-  const { data: blog, isLoading, error } = useQuery<Blog>({
-    queryKey: ["/api/blogs", params.slug],
+  const { data: entry, isLoading, error } = useQuery<Blog>({
+    queryKey: ["/api/blogs", params.slug, params.entrySlug],
     queryFn: async () => {
-      const res = await fetch(`/api/blogs/${params.slug}`);
-      if (!res.ok) throw new Error("Blog not found");
+      const res = await fetch(`/api/blogs/${params.slug}/${params.entrySlug}`);
+      if (!res.ok) throw new Error("Entry not found");
       return res.json();
     },
   });
@@ -47,85 +46,45 @@ export default function BlogDetail() {
     );
   }
 
-  if (error || !blog) {
+  if (error || !entry) {
     return (
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 text-center">
-        <p className="text-muted-foreground mb-4">Blog not found.</p>
-        <Link href="/blogs">
+        <p className="text-muted-foreground mb-4">Entry not found.</p>
+        <Link href={`/blogs/${params.slug}`}>
           <Button variant="outline">
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Blogs
+            Back
           </Button>
         </Link>
-      </div>
-    );
-  }
-
-  if (blog.isSeries) {
-    return (
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
-        <Link href="/blogs">
-          <Button variant="ghost" size="sm" className="mb-6">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Blogs
-          </Button>
-        </Link>
-
-        <h1 className="font-serif text-3xl font-bold mb-2">{blog.title}</h1>
-        {blog.excerpt && (
-          <p className="text-muted-foreground mb-8">{blog.excerpt}</p>
-        )}
-
-        <div className="flex flex-col gap-4">
-          {blog.entries?.map((entry) => (
-            <Link key={entry.slug} href={`/blogs/${blog.slug}/${entry.slug}`}>
-              <Card className="hover-elevate cursor-pointer transition-all">
-                <CardHeader className="pb-2">
-                  <CardTitle className="font-serif text-lg">{entry.title}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground text-sm line-clamp-2">{entry.excerpt}</p>
-                  {entry.publishedAt && (
-                    <p className="text-xs text-muted-foreground mt-3">
-                      {new Date(entry.publishedAt).toLocaleDateString('en-US', {
-                        year: 'numeric', month: 'long', day: 'numeric',
-                      })}
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
-        </div>
       </div>
     );
   }
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
-      <Link href="/blogs">
-        <Button variant="ghost" size="sm" className="mb-6" data-testid="button-back-blogs">
+      <Link href={`/blogs/${params.slug}`}>
+        <Button variant="ghost" size="sm" className="mb-6">
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Blogs
+          Back to Daily Scribbles
         </Button>
       </Link>
 
       <article>
         <header className="mb-8">
-          <h1 className="font-serif text-3xl md:text-4xl font-bold mb-4" data-testid="text-blog-title">
-            {blog.title}
+          <h1 className="font-serif text-3xl md:text-4xl font-bold mb-4">
+            {entry.title}
           </h1>
-          {blog.publishedAt && (
+          {entry.publishedAt && (
             <span className="text-sm text-muted-foreground">
-              {new Date(blog.publishedAt).toLocaleDateString('en-US', {
+              {new Date(entry.publishedAt).toLocaleDateString('en-US', {
                 year: 'numeric', month: 'long', day: 'numeric',
               })}
             </span>
           )}
         </header>
 
-        <div className="prose" data-testid="text-blog-content">
-          {renderContent(blog.content)}
+        <div className="prose">
+          {renderContent(entry.content)}
         </div>
       </article>
     </div>

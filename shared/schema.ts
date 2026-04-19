@@ -13,6 +13,8 @@ export interface Blog {
   category: string;
   coverImage?: string;
   publishedAt?: string;
+  isSeries?: boolean;
+  entries?: Blog[];
 }
 
 // Book review type for frontend/API
